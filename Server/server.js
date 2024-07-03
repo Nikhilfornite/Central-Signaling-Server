@@ -33,9 +33,9 @@ chat.on('connection',(chatSocket)=>{
         console.log(`${chatSocket.id} chatsocket joined the ${roomID}`);
     })
 
-    chatSocket.on('message',(txtMsg)=>{
+    chatSocket.on('message',(txtMsg,userName)=>{
         console.log(`${chatSocket.id} sent a message ${txtMsg}`);
-        chatSocket.to(Array.from(chatSocket.rooms)[1]).emit('message',txtMsg);
+        chatSocket.to(Array.from(chatSocket.rooms)[1]).emit('message',txtMsg,userName);
     })
     chatSocket.on('disconnect',()=>{
         console.log(`${chatSocket.id} disconnected`);

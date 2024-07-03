@@ -253,6 +253,7 @@ app.post('/join-call',async(req,res)=>{
     console.log(req.body.room, "is the roomID the user wants to join");
     res.render('client',{
         joinRoomID: room,
+        userName: user_name,
     });
 })
 

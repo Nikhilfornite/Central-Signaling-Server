@@ -120,6 +120,8 @@ video {
 }
 
 #list-container{
+    display: flex;
+    flex-direction: column;
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -221,6 +223,7 @@ video {
 }
 
 .user-message {
+    align-self: flex-end;
     text-align: left;
     background-color: #DCF8C6;
     padding: 8px;
@@ -231,6 +234,7 @@ video {
 }
 
 .peer-message {
+    align-self: flex-start;
     text-align: left;
     background-color: #E5E7EB;
     padding: 8px;

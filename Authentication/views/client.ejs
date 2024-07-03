@@ -68,6 +68,7 @@
         const peerconnections={};
 
         let roomID = "<%= joinRoomID %>";
+        let userName = "<%= userName %>";
         let localStream;
         let videotoggle;
         let audiotoggle;
@@ -161,9 +162,9 @@
 
     
         //sockets of chatting are used below
-        chatSocket.on('message',async (newMessage)=>{
+        chatSocket.on('message',async (newMessage,userName)=>{
             const newMsg = document.createElement('li');
-            newMsg.textContent = newMessage;
+            newMsg.textContent = `${userName}: ${newMessage}`;
             // newMsg.style.backgroundColor = '#E5E7EB';
             newMsg.classList.add('peer-message');
             lsContainer.appendChild(newMsg);
@@ -305,11 +306,11 @@
                 // await addUserMessage(msgInput.value);
 
                 const newMsg = document.createElement('li');
-                newMsg.textContent = msgInput.value;
+                newMsg.textContent = `You: ${msgInput.value}`;
                 // newMsg.style.backgroundColor = '#DCF8C6';
                 newMsg.classList.add('user-message')
                 lsContainer.appendChild(newMsg);
-                chatSocket.emit('message',msgInput.value);
+                chatSocket.emit('message',msgInput.value,userName);
                 msgInput.value="";
                 lsContainer.scrollTop = lsContainer.scrollHeight;
             }
@@ -338,14 +339,15 @@
             }
         });
 
-        document.getElementById("hangUpBtn").addEventListener('click',()=>{
+        document.getElementById("hangUpBtn").addEventListener('click', async()=>{
             let videos = document.querySelectorAll('video');
-            window.location.href='/redirectLanding';
+            
             videos.forEach((video)=>{
                 video.srcObject = null;
                 vidContainer.removeChild(video);
             })
-            socket.emit('hangup');
+            await socket.emit('hangup');
+            window.location.href='/';
             
             // hangup();
         })
