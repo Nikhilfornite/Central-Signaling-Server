@@ -20,6 +20,8 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 
 let user_id;
+let user_name;
+let user_email;
 
 app.use(express.static("public"));
 
@@ -86,7 +88,7 @@ app.get('/callhistory/:userId', async (req, res) => {
     }
 
     try {
-        const result = await db.query("SELECT call_date, call_time FROM user_history WHERE log_id = $1 order by call_date desc,call_time desc limit 15", [userId]);
+        const result = await db.query("SELECT call_date, call_time FROM user_history WHERE log_id = $1 order by call_date desc,call_time desc limit 13", [userId]);
         const items = result.rows.map(item => ({
             call_date: formatDate(item.call_date),
             call_time: formatTime(item.call_time)
@@ -96,6 +98,15 @@ app.get('/callhistory/:userId', async (req, res) => {
         console.error("Error fetching user history:", error.message);
         res.status(500).send("Error fetching user history");
     }
+});
+
+app.get('/redirectLanding',(req,res)=>{
+    res.render('landing',{
+        roomID:' ',
+        userId: user_id,
+        userName: user_name,
+        email: user_email,
+    });
 });
 
 
@@ -159,6 +170,11 @@ app.post("/login",async(req,res)=>{
                     }catch(error){
                         console.error("error while adding call-log",error.message);
                     }
+                    
+                    user_id = resultdata.id;
+                    user_email = resultdata.user_email;
+                    user_name = resultdata.user_name;
+
                     res.render("landing",{
                         roomID:'',
                         userId: resultdata.id,
@@ -212,12 +228,7 @@ app.post("/register",async (req,res)=>{
                         const time = day.toISOString(); // Full UTC timestamp
                         await db.query('Insert into user_history (log_id,call_date,call_time) values ($1,$2,$3)',[resultdata.id,date,time]);
 
-                        res.render("landing",{
-                            roomID:' ',
-                            userId: resultdata.id,
-                            userName: username,
-                            email: resultdata.user_email,
-                        });
+                        res.redirect("/");
                     }catch(e){
                         console.log("Error while adding call-Log",e.message);
                     }

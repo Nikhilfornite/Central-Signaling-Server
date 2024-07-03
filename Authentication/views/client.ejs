@@ -340,11 +340,13 @@
 
         document.getElementById("hangUpBtn").addEventListener('click',()=>{
             let videos = document.querySelectorAll('video');
+            window.location.href='/redirectLanding';
             videos.forEach((video)=>{
                 video.srcObject = null;
                 vidContainer.removeChild(video);
             })
             socket.emit('hangup');
+            
             // hangup();
         })
 

@@ -20,7 +20,7 @@
             <div id="history-content" class="content">
                 <!-- History details go here -->
                 <button id="history-back"></button>
-                <p>History Details</p>
+                <p>View your login history here</p>
                 <button id="view-history">View History</button>
             </div>
         </div>
@@ -91,6 +91,7 @@
             .then(data=>{
                 console.log(data.roomID);
                 document.querySelector('input[name="room"]').value = data.roomID;
+                alert(`Copy your roomID ${data.roomID}`);
             })
             .catch(error =>{
                 alert("Error loading new ROOMID, try again later or try refreshing the page");

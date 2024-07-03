@@ -16,7 +16,7 @@ body, html {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 10%;
+    width: 6%;
     height: 100%;
     background-color: #f0f0f0; 
     gap: 1em;
@@ -33,7 +33,7 @@ body, html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 90%;
+    width: 94%;
     height: 100%;
     transition: width 0.3s ease-in-out;
 }
@@ -117,6 +117,7 @@ body, html {
 #profile, #profile-back {
     width: 4em;
     height: 4em;
+    border: none;
     /* border: 1px solid rgb(193, 158, 158); */
     border-radius: 50%;
     background-image: url('./images/profile.png'); 
@@ -127,10 +128,15 @@ body, html {
     margin-top: 3em;
 }
 
+#profile:hover{
+    border: 2px solid rgb(114, 114, 235);
+    opacity: 0.5;
+}
+
 
 #history, #history-back {
-    width: 4em;
-    height: 4em;
+    width: 3em;
+    height: 3em;
     border: none;
     border-radius: 50%;
     background-image: url('./images/history.png'); 
@@ -138,6 +144,10 @@ body, html {
     background-position: center;
     cursor: pointer;
     /* margin-top: 1em; */
+}
+
+#history:hover{
+    opacity: 0.5;
 }
 
 #history-back{
