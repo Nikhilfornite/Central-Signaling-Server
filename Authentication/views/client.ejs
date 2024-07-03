@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/clientStyle.css"/>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div id="app">
+        <div id="video-container">
+            <video id="local-video" autoplay muted></video>
+        </div>
+    
+        <div id="chat-container">
+            <div id="messages">
+                <ul id="list-container"></ul>
+            </div>
+            <div id="msg-section">
+                <input id="msg-input" type="text" placeholder="Type your text">
+                <button id="msg-btn" type="submit"></button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="control-container">
+        <div id="btn-container">
+            <button id="mic-toggle-btn"></button>
+            <button id="video-toggle-btn"></button>
+            <button id="chat-toggle"></button>
+            <button id="hangUpBtn"></button>
+        </div>
+    </div>
+
+
+
+    <script type="importmap">
+        {
+          "imports": {
+            "socket.io-client": "https://cdn.socket.io/4.7.5/socket.io.esm.min.js"
+          }
+        }
+    </script>
+
+    <script type="module">
+        import { io } from "socket.io-client";
+
+        const socket = io('http://localhost:5050');
+        const chatSocket = io("http://localhost:5050/chat");
+       
+        const configuration = {
+            iceServers:[{
+                urls:'stun:stun.l.google.com:19302'
+            }]
+        };
+
+        const msgBtn = document.getElementById("msg-btn");
+        const msgInput = document.getElementById("msg-input");
+        const lsContainer = document.getElementById("list-container");
+
+        const vidContainer = document.getElementById("video-container");
+        const localVideo = document.getElementById("local-video");
+
+        const chatContainer = document.getElementById('chat-container');
+        const chatToggle = document.getElementById('chat-toggle');
+
+        const peerconnections={};
+
+        let roomID = "<%= joinRoomID %>";
+        let localStream;
+        let videotoggle;
+        let audiotoggle;
+
+
+    function resizeVideos() {
+        console.log("resize was called");
+        const videos = vidContainer.querySelectorAll('video');
+        const videoCount = videos.length;
+        let width, height;
+        
+        if (videoCount === 1) {
+            width = '100%';
+            height = '100%';
+        } 
+        else {
+            if(videoCount===5 || videoCount===6)
+            {
+                width= '33.3%';
+                height = '50%';
+            }
+            else{
+                const sqrt = Math.ceil(Math.sqrt(videoCount));
+                width = `${100/sqrt}%`;
+                height = `${100/sqrt}%`;
+            }
+        }
+        videos.forEach(video => {
+            video.style.width = width;
+            video.style.height = height;
+            // video.style.objectFit = 'contain';
+        });
+    }   
+
+    function removeVideoStream(peerID){
+        const video = document.getElementById(peerID);
+        if(video)
+        {
+            video.srcObject = null;
+            vidContainer.removeChild(video);
+            resizeVideos();
+        }
+    }
+
+    async function init(){
+        console.log("init called");
+        try{
+
+            // let audioEnabled = localStorage.getItem('micEnabled') === 'true';
+            // let videoEnabled = localStorage.getItem('videoEnabled') === 'true';
+
+            localStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+            localVideo.srcObject = localStream;
+            videotoggle = localStream.getVideoTracks()[0];
+            audiotoggle = localStream.getAudioTracks()[0];
+            console.log("local stream added");
+
+            // document.getElementById('mic-toggle-btn').classList.toggle('mic-on', audiotoggle.enabled);
+            // document.getElementById('mic-toggle-btn').classList.toggle('mic-off', !audiotoggle.enabled);
+            // document.getElementById('video-toggle-btn').classList.toggle('video-on', videotoggle.enabled);
+            // document.getElementById('video-toggle-btn').classList.toggle('video-off', !videotoggle.enabled);
+            document.getElementById('mic-toggle-btn').classList.add(audiotoggle.enabled ? 'mic-on' : 'mic-off');
+            document.getElementById('video-toggle-btn').classList.add(videotoggle.enabled ? 'video-on' : 'video-off');
+            
+        }
+        catch(error){
+            console.log("Error fetching your media stream", error);
+        }
+            
+    }
+
+    // function scrollToBottom(){
+    //     lsContainer.scrollTop() = lsContainer.scrollHeight();
+    // }
+
+    // function addUserMessage(message){
+    //     const newMsg = document.createElement('li');
+    //     newMsg.textContent = message;
+    //     newMsg.classList.add('user-message');
+    //     lsContainer.append(newMsg);
+    //     scrollToBottom();
+    // }
+
+    // function addPeerMessage(message){
+    //     const newMsg = document.createElement('li');
+    //     newMsg.textContent = message;
+    //     newMsg.classList.add('peer-message');
+    //     lsContainer.append(newMsg);
+    //     scrollToBottom();
+    // }
+
+    
+        //sockets of chatting are used below
+        chatSocket.on('message',async (newMessage)=>{
+            const newMsg = document.createElement('li');
+            newMsg.textContent = newMessage;
+            // newMsg.style.backgroundColor = '#E5E7EB';
+            newMsg.classList.add('peer-message');
+            lsContainer.appendChild(newMsg);
+            lsContainer.scrollTop = lsContainer.scrollHeight;
+            // await addPeerMessage(newMessage);
+        });
+
+
+
+        //sockets of video calling are used below
+        socket.on('user-connected', async(newuserID)=>{
+            if(!peerconnections[newuserID])
+            {
+                const peerconnection = new RTCPeerConnection(configuration);
+
+                peerconnections[newuserID] = peerconnection;
+
+                localStream.getTracks().forEach(track=>{
+                peerconnection.addTrack(track,localStream);
+                console.log("local tracks added on new user connecting");
+            })
+
+            peerconnection.onicecandidate = (event)=>{
+                if(event.candidate)
+                {
+                    socket.emit('icecandidate',event.candidate,newuserID);
+                }
+            }
+
+            peerconnection.ontrack = (event)=>{
+                const [remoteStream] = event.streams;
+
+                if(!document.getElementById(newuserID))
+                {
+                    const remoteVideo = document.createElement('video');
+                    remoteVideo.id = newuserID;
+                    remoteVideo.srcObject = remoteStream;
+                    remoteVideo.autoplay = true;
+                    remoteVideo.playsInline= true;
+                    document.getElementById('video-container').appendChild(remoteVideo);
+                    resizeVideos();
+                    
+                    console.log("remote track added while user connected");
+                }
+                
+            }
+
+            const offer =  await peerconnection.createOffer();
+            await peerconnection.setLocalDescription(offer);
+
+            socket.emit('offer',offer,newuserID);
+            }            
+        });
+
+        socket.on('offer',async (offer,peerID)=>{
+            console.log(`offer received from ${peerID}`)
+            if(!peerconnections[peerID])
+            {
+                const peerconnection = new RTCPeerConnection(configuration);
+            peerconnections[peerID] = peerconnection;
+
+            localStream.getTracks().forEach(track=>{
+                peerconnection.addTrack(track,localStream);
+                console.log("local tracks added on receiving offer");
+            })
+
+            peerconnection.ontrack = (event)=>{
+                const [remoteStream] = event.streams;
+
+                console.log("remote video obtained");
+            
+                if(!document.getElementById(peerID))
+                {
+                    const remoteVideo = document.createElement('video');
+                    remoteVideo.id = peerID;
+                    remoteVideo.srcObject = remoteStream;
+                    remoteVideo.autoplay = true;
+                    remoteVideo.playsInline= true;
+                    document.getElementById('video-container').appendChild(remoteVideo); 
+                    resizeVideos();
+                    console.log("remote track added while offer received");
+                }
+
+
+                
+            };
+
+            peerconnection.onicecandidate = (event)=>{
+                if(event.candidate)
+                {
+                    socket.emit('icecandidate',event.candidate,peerID);
+                }
+            };
+
+            await peerconnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerconnection.createAnswer();
+            await peerconnection.setLocalDescription(answer);
+            socket.emit('answer',answer,peerID);
+            console.log(peerconnections);
+            }
+        });
+
+        socket.on('answer',async (answer,newuserID)=>{
+            const peerconnection = peerconnections[newuserID];    
+            await peerconnection.setRemoteDescription(new RTCSessionDescription(answer));
+            console.log(peerconnections);
+        });
+
+        socket.on('icecandidate',async (candidate,peerID)=>{
+            const peerconnection = peerconnections[peerID];
+            console.log(`ice candidate received from ${peerID}`)
+            await peerconnection.addIceCandidate(new RTCIceCandidate(candidate));
+        })
+
+        socket.on('dscnt',(peerID)=>{
+            if(peerconnections[peerID])
+            {
+                peerconnections[peerID].close();
+                delete peerconnections[peerID];
+                removeVideoStream(peerID);
+                // resizeVideos();
+            }
+        })
+
+        
+        chatToggle.addEventListener('click', () => {
+            if (chatContainer.style.right === '0%') {
+            chatContainer.style.right = '-100%';
+            vidContainer.style.width = '100%';
+            } else {
+            chatContainer.style.right = '0%';
+            vidContainer.style.width = '80%';
+            }
+        });
+
+        msgBtn.addEventListener('click',async ()=>{
+            if(msgInput.value)
+            {
+                // await addUserMessage(msgInput.value);
+
+                const newMsg = document.createElement('li');
+                newMsg.textContent = msgInput.value;
+                // newMsg.style.backgroundColor = '#DCF8C6';
+                newMsg.classList.add('user-message')
+                lsContainer.appendChild(newMsg);
+                chatSocket.emit('message',msgInput.value);
+                msgInput.value="";
+                lsContainer.scrollTop = lsContainer.scrollHeight;
+            }
+            else{
+                alert("Please input the message");
+            }    
+        })
+
+        document.getElementById("mic-toggle-btn").addEventListener('click',()=>{
+            if(audiotoggle)
+            {
+                audiotoggle.enabled = !audiotoggle.enabled;
+                const micToggleButton = document.getElementById('mic-toggle-btn');
+                micToggleButton.classList.toggle('mic-on', audiotoggle.enabled);
+                micToggleButton.classList.toggle('mic-off', !audiotoggle.enabled);
+            }
+        });
+
+        document.getElementById("video-toggle-btn").addEventListener('click',()=>{
+            if(videotoggle)
+            {
+                videotoggle.enabled = !videotoggle.enabled;
+                const videoToggleButton = document.getElementById('video-toggle-btn');
+                videoToggleButton.classList.toggle('video-on', videotoggle.enabled);
+                videoToggleButton.classList.toggle('video-off', !videotoggle.enabled);
+            }
+        });
+
+        document.getElementById("hangUpBtn").addEventListener('click',()=>{
+            let videos = document.querySelectorAll('video');
+            videos.forEach((video)=>{
+                video.srcObject = null;
+                vidContainer.removeChild(video);
+            })
+            socket.emit('hangup');
+            // hangup();
+        })
+
+
+        await init();
+
+        if(roomID)
+        {
+            // localStorage.removeItem('micEnabled');
+            // localStorage.removeItem('videoEnabled');
+            socket.emit('join-room',roomID);
+            chatSocket.emit('join-room',roomID);
+        }
+
+        // window.addEventListener('load',init);
+        // window.addEventListener('beforeunload',()=>{
+        //     console.log('dsnct called');
+        //     socket.emit('dscnt');
+        //     chatSocket.emit('dscnt');
+        // })
+        
+        
+        
+    </script>
+    
+</body>
+</html>

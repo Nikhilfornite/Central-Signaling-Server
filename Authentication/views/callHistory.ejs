@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call History</title>
+    <link rel="stylesheet" href="/historyStyle.css"/>
+</head>
+<body>
+    <div id="history-container">
+        <h1>Call History</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% items.forEach(item => { %>
+                    <tr>
+                        <td><%= item.call_date %></td>
+                        <td><%= item.call_time %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <!-- <button id="back-button">Back</button> -->
+    </div>
+    <script>
+        // document.getElementById("back-button").addEventListener('click', () => {
+        //     window.location.href = "/";
+        // });
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/loginStyle.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Create New Account</h1>
+
+        <div id="error-message">
+            <% if (typeof error !== 'undefined' && error !== null) { %>
+                <p class="error-message"><%= error %></p>
+            <% } %>
+        </div>
+
+        <form action="/register" method="post">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autocomplete="off" autofocus>
+            </div>
+            <div class="input-group">
+                <label for="Email">Email</label>
+                <input type="text" id="Email" name="email" required autocomplete="off" autofocus>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required autocomplete="off" autofocus>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</body>
+</html>

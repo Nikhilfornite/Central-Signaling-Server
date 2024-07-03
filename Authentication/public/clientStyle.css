@@ -1,0 +1,250 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    background-color: grey;
+    /* box-sizing: border-box; */
+}
+
+#app {
+    position: relative;
+    width: 100%;
+    height: 90%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch; /* Ensures both containers stretch to the same height */
+    overflow-x: hidden;
+    background-color: rgb(87, 83, 83);
+}
+
+#video-container {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    justify-content: center; 
+    align-items: center;
+    transition: width 0.5s ease;
+    border-radius: 10px;
+    background-color: rgb(87, 83, 83);
+
+}
+
+video {
+    background-color: grey;
+    object-fit: cover;
+    transition: all 0.5s ease;
+    /* margin: 0; */
+    /* border-radius: 10px; */
+}
+
+#video-container video {
+    flex-shrink: 1;
+    width: 100%;
+    height: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    /* background: transparent; */
+    margin: 0;
+    /* border: 5px solid rgb(153, 153, 223); */
+    border: none;
+    border-radius: 10px;
+    background-color: rgb(87, 83, 83);
+
+}
+
+#chat-container {
+    margin: 0px;
+    box-sizing: border-box;
+    position: absolute;
+    right: -100%;
+    top: 0;
+    width: 20%;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: right 0.5s ease;
+    padding: 20px;
+    /* padding-left: 25px; */
+    overflow-y: auto;
+    border-radius: 10px;
+    border-bottom: 5px solid rgb(87, 83, 83);
+    border-top: 5px solid rgb(87, 83, 83);
+    border-right: 5px solid rgb(87, 83, 83);;
+}
+
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+#msg-section{
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* width: 100%; */
+}
+
+#msg-input{
+    outline: none;
+    width: 85%;
+    padding: 10px 40px 10px 10px;
+    border: 1px solid grey;
+    border-radius: 16px;
+}
+
+#msg-btn{
+    position: absolute;
+    right: 8px;
+    width: 15%;
+    height: 80%;
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 55%;
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position: center;
+    background-image: url(./images/send-message.png);
+    cursor: pointer;
+    
+    /* right: em; */
+}
+
+#list-container{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* #list-container li{
+    background-color: bisque;
+    padding: 5px;
+    border-radius: 2px;
+} */
+
+#control-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 10%; /* Control container takes up the remaining 10% */
+    background: rgb(87, 83, 83); /* Semi-transparent background */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+}
+
+#btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+}
+
+#btn-container button {
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+/* #btn-container button:hover {
+    background-color: rgba(255, 255, 255, 1);
+} */
+
+#chat-toggle{
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position: center;
+    background-image: url(./images/chat2.png);
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+#hangUpBtn{
+    background-image: url('./images/end-call-icon.webp');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: white;
+}
+
+#mic-toggle-btn, #video-toggle-btn {
+    width: 3em;
+    height: 3em;
+    border: none;
+    border-radius: 50%;
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.mic-on {
+    background-image: url('/images/mic-on.png'); 
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.mic-off {
+    background-image: url('/images/mic-off.png'); 
+    background-color: rgb(206, 20, 20);
+}
+
+.video-on {
+    background-image: url('/images/video-on.png'); 
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.video-off {
+    background-image: url('/images/video-off.png'); 
+    background-color: rgb(206, 20, 20);
+}
+
+.user-message {
+    text-align: left;
+    background-color: #DCF8C6;
+    padding: 8px;
+    border-radius: 10px;
+    word-wrap: break-word;
+    margin: 5px 10px;
+    max-width: 60%;
+}
+
+.peer-message {
+    text-align: left;
+    background-color: #E5E7EB;
+    padding: 8px;
+    border-radius: 10px;
+    word-wrap: break-word;
+    margin: 5px 10px;
+    max-width: 60%;
+}
+
+#list-container li .user-message{
+    float: right;
+}
+
+#list-container li .peer-message{
+    float: left;
+}
+
