@@ -31,7 +31,10 @@ const db = new pg.Client(process.env.DB_URL);
 
 db.connect();
 
-
+function validateMailID(email){
+    const validPattern = /^[^\s@]+@gov\.in$/;
+    return validPattern.test(email);
+}
 
 function generateRoomID(){
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -160,7 +163,7 @@ app.post("/login",async(req,res)=>{
                     console.log("Error while comparing password ",error.message);
                 }
                 else if(match){
-                    const day = new Date();
+                    const day = new Date(); 
                     const date = day.toISOString().slice(0, 10); 
                     const time = day.toISOString(); 
 
@@ -208,6 +211,13 @@ app.post("/register",async (req,res)=>{
         {
             res.render("register",{
                 error: "username already exists, try a different one."
+            });
+        }
+
+        if(!validateMailID(email))
+        {
+            res.render("register",{
+                error: "Not allowed for outside users, get a mailID in the format of @gov.in."
             });
         }
 
