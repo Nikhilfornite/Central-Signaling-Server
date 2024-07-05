@@ -209,14 +209,14 @@ app.post("/register",async (req,res)=>{
         const existingUser = await db.query("select user_name from users where user_name=$1",[username]);
         if(existingUser.rows.length)
         {
-            res.render("register",{
+            return res.render("register",{
                 error: "username already exists, try a different one."
             });
         }
 
         if(!validateMailID(email))
         {
-            res.render("register",{
+            return res.render("register",{
                 error: "Not allowed for outside users, get a mailID in the format of @gov.in."
             });
         }
