@@ -2,14 +2,14 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import ejs from "ejs";
 import { error } from "console";
 
 //loads 
-dotenv.config();
+// dotenv.config();
 
-const port = 3000;
+const port = 5000;
 
 const app = express();
 
@@ -25,9 +25,15 @@ let user_email;
 
 app.use(express.static("public"));
 
-console.log(process.env.DB_USER);
+// console.log(process.env.DB_USER);
 
-const db = new pg.Client(process.env.DB_URL);
+const db = new pg.Client({
+    user:"postgres",
+    host:"localhost",
+    database:"Project",
+    password:"Nik@2003",
+    port:5432,
+  });
 
 db.connect();
 

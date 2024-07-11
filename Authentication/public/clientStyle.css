@@ -21,7 +21,7 @@ body, html {
     background-color: rgb(87, 83, 83);
 }
 
-#video-container {
+.video-container {
     display: flex;
     gap: 0;
     flex-wrap: wrap;
@@ -43,22 +43,18 @@ video {
     /* border-radius: 10px; */
 }
 
-#video-container video {
+.video-container video {
     flex-shrink: 1;
     width: 100%;
     height: 100%;
-    padding: 5px;
     box-sizing: border-box;
-    /* background: transparent; */
-    margin: 0;
-    /* border: 5px solid rgb(153, 153, 223); */
-    border: none;
+    border: 2px solid white;
     border-radius: 10px;
-    background-color: rgb(87, 83, 83);
+    margin: 3px;
 
 }
 
-#chat-container {
+.chat-container {
     margin: 0px;
     box-sizing: border-box;
     position: absolute;
@@ -252,3 +248,40 @@ video {
     float: left;
 }
 
+.chat-on{
+    position: absolute;
+    right: 0%;
+}
+
+.chatvid-on{
+    width: 78%;
+}
+
+@media  (min-width:451px) and (max-width:770px){
+    .chatvid-on{
+        width: 65%;
+    }
+    .chat-on{
+        position: absolute;
+        right: 0%;
+        width: 30%;
+    }
+
+}
+@media (min-width:320px) and (max-width:450px){
+    
+    .chatvid-on{
+        width: 100%;
+    }
+    .chat-on{
+        position: absolute;
+        width: 100%;
+        right: 0%;
+        margin-top: 0.5%;
+        background: transparent;
+        border-radius: 10px;
+        border: 5px solid rgba(43, 81, 220, 0.8) ;
+    }
+   
+
+}

@@ -3,59 +3,37 @@ body, html {
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color: rgb(224, 190, 190);
+    background-color: rgb(102, 97, 97);
     overflow: hidden;
 }
 #main-div {
     width: 100vw;
     height: 100vh;
     display: flex;
+    position: absolute;
+    top: 0px;
+    z-index: 0;
 }
 
-#features-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 6%;
-    height: 100%;
-    background-color: #f0f0f0; 
-    gap: 1em;
-    position: relative;
-    transition: width 0.3s ease-in-out;
-    /* margin-top: 1em; */
-    /* padding-bottom: 1em; */
-}
-#features-container.expanded {
-    width: 20%;
-}
+
 #user-appearance {
+    position: absolute;
+    top: 15%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 94%;
-    height: 100%;
+    width: 100%;
+    height: 80%;
     transition: width 0.3s ease-in-out;
 }
-#user-appearance.shrunk {
-    width: 80%;
-}
+
+
 .content {
-    /* visibility: hidden; */
     display: none;
-    margin-top: 1em;
-    padding: 1em;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 80%;
-    text-align: center;
-    /* transition: visibility 0.3s ease-in-out; */
+    transition: 0.5s ease
 }
 
-/* .features-container.expanded.content{
-    visibility: visible;
-} */
  
 #testVideo-container {
     display: flex;
@@ -63,9 +41,10 @@ body, html {
     justify-content: center;
     align-items: center;
     width: 60%;
-    height: 50%;
-    background-color: grey;
+    height: 65%;
+    background-color: rgb(205, 197, 197);
     border-radius: 10px;
+    box-sizing: border-box;
     overflow: hidden;
     position: relative;
 }
@@ -100,32 +79,33 @@ body, html {
     flex-direction: row;
     gap: 1em;
     width: 60%;
-    height: auto;
+    min-height: 30px;
+    height: 5vmin;
     align-items: center;
     justify-content: center;
     margin-top: 1em; /* Reduce the gap between the video container and call options */
 }
 #time {
     position: absolute;
-    bottom: 10px;
-    left: 10px;
-    font-size: 1.5em;
-    padding: 0;
-    margin: 0;
+    color: white;
+    right: 1%;
+    top: 4%;
+  
 }
 
-#profile, #profile-back {
+
+#profile ,#profile-back {
     width: 4em;
     height: 4em;
     border: none;
-    /* border: 1px solid rgb(193, 158, 158); */
     border-radius: 50%;
     background-image: url('./images/profile.png'); 
     background-size: cover;
     background-position: center;
     cursor: pointer;
-    /* padding: 5px; */
     margin-top: 3em;
+    margin-left: 10px;
+    transition: all 1s ease;
 }
 
 #profile:hover{
@@ -133,42 +113,32 @@ body, html {
     opacity: 0.5;
 }
 
-
-#history, #history-back {
-    width: 3em;
-    height: 3em;
-    border: none;
-    border-radius: 50%;
-    background-image: url('./images/history.png'); 
-    background-size: cover;
-    background-position: center;
-    cursor: pointer;
-    /* margin-top: 1em; */
-}
-
-#history:hover{
+#profile-back:hover{
+    border: 2px solid rgb(114, 114, 235);
     opacity: 0.5;
 }
 
-#history-back{
-    background-color: #fff;
+
+
+.profile-content {
+    position: absolute;
+    display: inline-block;
+    left: 5px;
+    margin-top: 1em;
+    padding: 1em;
+    background-color: rgb(153, 150, 150);
+    border: 3px solid #ccc;
+    border-radius: 5px;
+    width: fit-content;
+    text-align: center;
+    z-index: 3;
+     
+}
+.profile-content h3{
+    color:  black
 }
 
-#profile-content {
-    display: none; 
-}
 
-#profile-content h3 {
-    margin-top: 10px;
-    font-size: 18px;
-    color: #333; 
-    font-weight: 600;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-#profile-content button:hover{
-    opacity: 0.8;
-}
 
 #mic-toggle-btn, #video-toggle-btn {
     width: 4em;
@@ -186,23 +156,127 @@ body, html {
 }
 
 .mic-on {
-    background-image: url('/images/mic-on.png'); 
+    background-image: url('./images/mic-on.png'); 
     background-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
 }
 
 .mic-off {
-    background-image: url('/images/mic-off.png'); 
+    background-image: url('./images/mic-off.png'); 
     background-color: rgb(206, 20, 20);
 }
 
 .video-on {
-    background-image: url('/images/video-on.png'); 
+    background-image: url('./images/video-on.png'); 
     background-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
 }
 
 .video-off {
-    background-image: url('/images/video-off.png'); 
+    background-image: url('./images/video-off.png'); 
     background-color: rgb(206, 20, 20);
+}
+
+#request-id{
+    height: 100%;
+    flex-basis: 100px;
+    border-radius: 15px;
+    border: none;
+    background-color: rgb(11, 91, 220);
+    color: white;
+    font-size: medium;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+#request-id:hover{
+    background-color: rgb(56, 59, 63);
+}
+.join-container{
+    height: 100%;
+    position: relative;
+}
+.join-ip{
+    height: 90%;
+    width: 90%;
+    border-radius: 15px;
+    border: none;
+    outline: none;
+    padding-left: 10px;
+}
+.join-ip::placeholder{
+    padding-left: 4px;
+}
+
+#joinCall-btn{
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    width: 10vmin;
+    font-size: medium;
+    font-weight: 500;
+    cursor: pointer;
+    color: white;
+    border-radius: 15px;
+    border: none;
+    background-color: rgb(11, 91, 220);
+    position: absolute;
+    right: -0.1%;
+}
+
+.join-container{
+    flex: 1;
+    flex-basis: 30%;
+    min-width: 150px;
+    max-width: 300px;
+}
+
+.join-container form{
+    height: 100%;
+}
+
+@media (min-width:320px) and (max-width:1440px){
+    #call-options {
+        height: 5vmin;
+    }
+
+}
+
+@media (min-width:320px) and (max-width:750px){
+    .testVideo-container{
+        flex-basis: 400px;
+    }
+
+}
+
+@media (min-width:320px) and (max-width:460px){
+
+    #user-appearance{
+        width: 100%;
+        height: 70vh;
+    }
+
+    #testVideo-container{
+        width: 90%;
+    }
+
+    #call-options{
+        justify-content: space-between;
+        width: 80%;
+    }
+
+    #joinCall-btn{
+        font-size: small;
+        border-radius: 15px;
+        width: 50px;
+    
+    }
+    #request-id{
+        font-size: small;
+        border-radius: 15px;
+        flex-basis: 0px;
+        flex: 1;
+    }
+    
+
 }

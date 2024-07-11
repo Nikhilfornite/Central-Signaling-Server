@@ -3,49 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Landing</title>
     <link rel="stylesheet" href="/landingStyle.css"/>
 </head>
 <body>
+    <div class="content ">
+        <button id="profile-back"></button>
+        <h3>User Name : Nikhil</h3>
+        <h3>e-mail : nikhil@gmail.com </h3>
+    </div>
     <div id="main-div">
-        <div class="features-container" id="features-container">
-            <button id="profile"></button>
-            <button id="history"></button>
-            <h3 id="time"></h3>
-            <div id="profile-content" class="content">
-                <button id="profile-back"></button>
-                <h3>User Name : <%= userName %></h3>
-                <h3>e-mail : <%= email %></h3>
-            </div>
-            <div id="history-content" class="content">
-                <!-- History details go here -->
-                <button id="history-back"></button>
-                <p>View your login history here</p>
-                <button id="view-history">View History</button>
-            </div>
-        </div>
+        <button id="profile"></button>
+        
         <div class="user-appearance" id="user-appearance">
             <div id="testVideo-container">
-                <video id="video-test" autoplay muted></video>
+                <video id="video-test" autoplay></video>
                 <div id="btn-container">
-                    <button id="mic-toggle-btn"></button>
-                    <button id="video-toggle-btn"></button>
+                    <button id="mic-toggle-btn" class="mic-on"></button>
+                    <button id="video-toggle-btn" class="video-on"></button>
                 </div>
             </div>
             <div id="call-options">
                 <button id="request-id">Get Room</button>
-                <form action="/join-call" method="post">
-                    <input type="text" name="room" required placeholder="Enter Room-Id here" value="<%= roomID %>"/>
-                    <!-- <input type="hidden" name="micState" id="micState"/>
-                    <input type="hidden" name="videoState" id="videoState"/> -->
-                    <button type="submit" id="joinCall-btn">Join</button>
-                </form>
+                
+                    <div class="join-container">
+                        <form action="/join-call" method="post">
+                            <input type="text" class="join-ip " name="room" required placeholder="Enter RoomId" value=""/>
+                            <button type="submit" id="joinCall-btn">Join</button>
+                        </form>
+                    </div>
             </div>
         </div>
+        <h2 id="time"></h2>
     </div>
+   
 
     <script>
         const testVideo = document.getElementById("video-test");
+        let profilecnt = document.querySelector(".content")
+        console.log("Video test is",testVideo);
+        const mic = document.getElementById('mic-toggle-btn');
+        console.log("Im mic btn",mic);
 
         let localStream;
         let audiotoggle;
@@ -55,8 +53,8 @@
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
                 testVideo.srcObject = localStream;
-                videotoggle = localStream.getVideoTracks()[0];
                 audiotoggle = localStream.getAudioTracks()[0];
+                videotoggle = localStream.getVideoTracks()[0];
                 console.log("local stream added");
 
                 document.getElementById('mic-toggle-btn').classList.add(audiotoggle.enabled ? 'mic-on' : 'mic-off');
@@ -69,11 +67,11 @@
 
         function updateTime(){
             const timeElement = document.getElementById("time");
+            console.log(timeElement)
             const now = new Date();
             const hours = String(now.getHours()).padStart(2,'0');
             const minutes = String(now.getMinutes()).padStart(2,'0');
-            // const seconds = String(now.getSeconds()).padStart(2,'0');
-            timeElement.innerHTML = `${hours}:${minutes}`;
+            timeElement.innerText = `${hours}:${minutes}`;
         }
 
         
@@ -98,14 +96,17 @@
             })
         })
 
-        document.getElementById("mic-toggle-btn").addEventListener('click', () => {
-            if(audiotoggle) {
-                audiotoggle.enabled = !audiotoggle.enabled;
-                const micToggleButton = document.getElementById('mic-toggle-btn');
-                micToggleButton.classList.toggle('mic-on', audiotoggle.enabled);
-                micToggleButton.classList.toggle('mic-off', !audiotoggle.enabled);
+        if (mic) {
+                mic.addEventListener('click', () => {
+                    if (audiotoggle) {
+                        audiotoggle.enabled = !audiotoggle.enabled;
+                        mic.classList.toggle('mic-on', audiotoggle.enabled);
+                        mic.classList.toggle('mic-off', !audiotoggle.enabled);
+                    }
+                });
+            } else {
+                console.error("Mic button not found in the DOM.");
             }
-        });
 
         document.getElementById("video-toggle-btn").addEventListener('click', () => {
             if(videotoggle) {
@@ -117,78 +118,18 @@
         });
 
         document.getElementById("profile").addEventListener('click', () => {
-            document.getElementById("features-container").classList.add('expanded');
-            document.getElementById("user-appearance").classList.add('shrunk');
-            document.getElementById("profile-content").style.display = 'block';
-            document.getElementById("history-content").style.display = 'none';
-            document.getElementById("profile").style.display = 'none';
-            document.getElementById("history").style.display = 'none';
+           profilecnt.classList.add("profile-content");
+            document.getElementById("profile").style.display = "none";
         });
 
-        document.getElementById("history").addEventListener('click', () => {
-            document.getElementById("features-container").classList.add('expanded');
-            document.getElementById("user-appearance").classList.add('shrunk');
-            document.getElementById("history-content").style.display = 'block';
-            document.getElementById("profile-content").style.display = 'none';
-            document.getElementById("profile").style.display = 'none';
-            document.getElementById("history").style.display = 'none';
-        });
 
         document.getElementById("profile-back").addEventListener('click', () => {
-            document.getElementById("features-container").classList.remove('expanded');
-            document.getElementById("user-appearance").classList.remove('shrunk');
-            document.getElementById("profile-content").style.display = 'none';
-            document.getElementById("profile").style.display = 'block';
-            document.getElementById("history").style.display = 'block';
+            profilecnt.classList.remove("profile-content");
+            document.getElementById("profile").style.display = "inline-block";
         });
 
-        document.getElementById("history-back").addEventListener('click', () => {
-            document.getElementById("features-container").classList.remove('expanded');
-            document.getElementById("user-appearance").classList.remove('shrunk');
-            document.getElementById("history-content").style.display = 'none';
-            document.getElementById("profile").style.display = 'block';
-            document.getElementById("history").style.display = 'block';
-        });
-
-        //to fetch user history
-        document.getElementById("view-history").addEventListener('click', () => {
-            const userID = "<%= userId %>";
-            console.log(userID);
-            window.location.href = `/callhistory/${userID}`;
-            // fetch('/historyData',{
-            //     method: 'POST',
-            //     headers: {
-            //         'content-Type':'application/json'
-            //     },
-            //     body: JSON.stringify({user_id:userID})
-            // })
-            // .then(response => {
-            //     if (!response.ok) {
-            //         throw new Error('Network response was not OK');
-            //     }
-            //     console.log(response);
-            //     return response.json();
-            // })
-            // .then(history =>{
-            //     console.log("history:",history);
-            //     history.render('callHistory',{
-            //         items:history
-            //     });
-            //     // window.location.href = '/history';
-                
-            // })
-            // .catch(error =>{
-            //     console.error("Error fetching user history:",error);
-            // })
-        });
-
-
-        // noting down the current states of mic and video to post it to server
-        // document.getElementById("joinCall-btn").addEventListener('click',()=>{
-        //     document.getElementById("micState") = audiotoggle.enabled;
-        //     document.getElementById("videoState") = videotoggle.enabled;
-        // })
-
+        
+       
         
         window.addEventListener('load', () => {
             console.log('Mic button classes:', document.getElementById('mic-toggle-btn').classList);

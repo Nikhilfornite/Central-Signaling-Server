@@ -9,11 +9,11 @@
 </head>
 <body>
     <div id="app">
-        <div id="video-container">
+        <div class="video-container">
             <video id="local-video" autoplay muted></video>
         </div>
     
-        <div id="chat-container">
+        <div class="chat-container">
             <div id="messages">
                 <ul id="list-container"></ul>
             </div>
@@ -46,8 +46,8 @@
     <script type="module">
         import { io } from "socket.io-client";
 
-        const socket = io('https://backend-connect-k225.onrender.com');
-        const chatSocket = io("https://backend-connect-k225.onrender.com/chat");
+        const socket = io('http://localhost:3000');
+        const chatSocket = io("http://localhost:3000/chat");
        
         const configuration = {
             iceServers:[{
@@ -59,10 +59,10 @@
         const msgInput = document.getElementById("msg-input");
         const lsContainer = document.getElementById("list-container");
 
-        const vidContainer = document.getElementById("video-container");
+        const vidContainer = document.querySelector(".video-container");
         const localVideo = document.getElementById("local-video");
 
-        const chatContainer = document.getElementById('chat-container');
+        const chatContainer = document.querySelector('.chat-container');
         const chatToggle = document.getElementById('chat-toggle');
 
         const peerconnections={};
@@ -74,34 +74,30 @@
         let audiotoggle;
 
 
-    function resizeVideos() {
-        console.log("resize was called");
-        const videos = vidContainer.querySelectorAll('video');
-        const videoCount = videos.length;
-        let width, height;
-        
-        if (videoCount === 1) {
-            width = '100%';
-            height = '100%';
-        } 
-        else {
-            if(videoCount===5 || videoCount===6)
-            {
-                width= '33.3%';
-                height = '50%';
+        function resizeVideos() {
+                console.log("resize was called");
+                const videos = vidContainer.querySelectorAll('video');
+                const videoCount = videos.length;
+                let width, height;
+
+                if (videoCount === 1) {
+                    width = '100%';
+                    height = '100%';
+                } else {
+                    if (videoCount === 5 || videoCount === 6) {
+                        width = '30%';
+                        height = '50%';
+                    } else {
+                        const sqrt = Math.ceil(Math.sqrt(videoCount));
+                        width = `${(100 / sqrt)-2}%`;
+                        height = `${(100 / sqrt)-2}%`;
+                    }
+                }
+                videos.forEach(video => {
+                    video.style.width = width;
+                    video.style.height = height;
+                });
             }
-            else{
-                const sqrt = Math.ceil(Math.sqrt(videoCount));
-                width = `${100/sqrt}%`;
-                height = `${100/sqrt}%`;
-            }
-        }
-        videos.forEach(video => {
-            video.style.width = width;
-            video.style.height = height;
-            // video.style.objectFit = 'contain';
-        });
-    }   
 
     function removeVideoStream(peerID){
         const video = document.getElementById(peerID);
@@ -117,19 +113,12 @@
         console.log("init called");
         try{
 
-            // let audioEnabled = localStorage.getItem('micEnabled') === 'true';
-            // let videoEnabled = localStorage.getItem('videoEnabled') === 'true';
-
             localStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
             localVideo.srcObject = localStream;
             videotoggle = localStream.getVideoTracks()[0];
             audiotoggle = localStream.getAudioTracks()[0];
             console.log("local stream added");
 
-            // document.getElementById('mic-toggle-btn').classList.toggle('mic-on', audiotoggle.enabled);
-            // document.getElementById('mic-toggle-btn').classList.toggle('mic-off', !audiotoggle.enabled);
-            // document.getElementById('video-toggle-btn').classList.toggle('video-on', videotoggle.enabled);
-            // document.getElementById('video-toggle-btn').classList.toggle('video-off', !videotoggle.enabled);
             document.getElementById('mic-toggle-btn').classList.add(audiotoggle.enabled ? 'mic-on' : 'mic-off');
             document.getElementById('video-toggle-btn').classList.add(videotoggle.enabled ? 'video-on' : 'video-off');
             
@@ -140,27 +129,7 @@
             
     }
 
-    // function scrollToBottom(){
-    //     lsContainer.scrollTop() = lsContainer.scrollHeight();
-    // }
-
-    // function addUserMessage(message){
-    //     const newMsg = document.createElement('li');
-    //     newMsg.textContent = message;
-    //     newMsg.classList.add('user-message');
-    //     lsContainer.append(newMsg);
-    //     scrollToBottom();
-    // }
-
-    // function addPeerMessage(message){
-    //     const newMsg = document.createElement('li');
-    //     newMsg.textContent = message;
-    //     newMsg.classList.add('peer-message');
-    //     lsContainer.append(newMsg);
-    //     scrollToBottom();
-    // }
-
-    
+   
         //sockets of chatting are used below
         chatSocket.on('message',async (newMessage,userName)=>{
             const newMsg = document.createElement('li');
@@ -204,7 +173,7 @@
                     remoteVideo.srcObject = remoteStream;
                     remoteVideo.autoplay = true;
                     remoteVideo.playsInline= true;
-                    document.getElementById('video-container').appendChild(remoteVideo);
+                    document.querySelector('.video-container').appendChild(remoteVideo);
                     resizeVideos();
                     
                     console.log("remote track added while user connected");
@@ -243,7 +212,7 @@
                     remoteVideo.srcObject = remoteStream;
                     remoteVideo.autoplay = true;
                     remoteVideo.playsInline= true;
-                    document.getElementById('video-container').appendChild(remoteVideo); 
+                    document.querySelector('.video-container').appendChild(remoteVideo); 
                     resizeVideos();
                     console.log("remote track added while offer received");
                 }
@@ -291,13 +260,8 @@
 
         
         chatToggle.addEventListener('click', () => {
-            if (chatContainer.style.right === '0%') {
-            chatContainer.style.right = '-100%';
-            vidContainer.style.width = '100%';
-            } else {
-            chatContainer.style.right = '0%';
-            vidContainer.style.width = '80%';
-            }
+            chatContainer.classList.toggle("chat-on");
+            vidContainer.classList.toggle("chatvid-on");
         });
 
         msgBtn.addEventListener('click',async ()=>{
