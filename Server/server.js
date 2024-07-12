@@ -5,18 +5,12 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import dotenv from "dotenv";
-
 dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const server = createServer(app);
 
-// app.use(express.static(path.join(__dirname, '..', 'client')));
-
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, '..', 'client', 'index.html'));
-// });
 
 const io = new Server(server,{
     cors:{
@@ -78,13 +72,12 @@ io.on('connection',(socket)=>{
     })
 
     socket.on('hangup',()=>{
-        // socket.disconnect();
         socket.to(Array.from(socket.rooms)[1]).emit('dscnt',socket.id);
         socket.leave(Array.from(socket.rooms)[1]);
     })
 });
 
-const PORT = process.env.PORT || 5050;
+const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

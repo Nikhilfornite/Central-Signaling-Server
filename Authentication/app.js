@@ -2,12 +2,11 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import bcrypt from "bcrypt";
-// import dotenv from "dotenv";
+import dotenv from "dotenv";
 import ejs from "ejs";
 import { error } from "console";
 
-//loads 
-// dotenv.config();
+dotenv.config();
 
 const port = 5000;
 
@@ -25,15 +24,7 @@ let user_email;
 
 app.use(express.static("public"));
 
-// console.log(process.env.DB_USER);
-
-const db = new pg.Client({
-    user:"postgres",
-    host:"localhost",
-    database:"Project",
-    password:"Nik@2003",
-    port:5432,
-  });
+const db = new pg.Client(process.env.DB_URL);
 
 db.connect();
 
@@ -117,27 +108,6 @@ app.get('/redirectLanding',(req,res)=>{
         email: user_email,
     });
 });
-
-
-// app.post('/historyData',async(req,res)=>{
-//     const { user_id } = req.body;
-
-//     try{
-//         const result = await db.query("select call_date,call_time from user_history where log_id=$1",[user_id]);
-//         const historyData = result.rows;
-//         console.log(result.rows);
-//         console.log(historyData);
-
-//         res.render('callHistory',{
-//             items: historyData,
-//         });
-
-//     }catch(error){
-//         console.error("Error fetching user history:", error.message);
-//         res.status(500).json({ error: "Error fetching user history" });
-//     }
-
-// });
 
 
 
