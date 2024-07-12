@@ -6,7 +6,7 @@ create table users(
 );
 
 create table user_history(
-  log_id UUID references users(id),
+  log_id UUID references users(id) on delete cascade,
   call_date DATE,
   call_time timestamptz,
   primary key (log_id,call_date,call_time)

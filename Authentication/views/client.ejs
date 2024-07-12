@@ -29,7 +29,7 @@
             <button id="mic-toggle-btn"></button>
             <button id="video-toggle-btn"></button>
             <button id="chat-toggle"></button>
-            <button id="hangUpBtn"></button>
+            <a id="btnanch" href="/redirectLanding"><button id="hangUpBtn" ></button></a>
         </div>
     </div>
 
@@ -305,15 +305,23 @@
 
         document.getElementById("hangUpBtn").addEventListener('click', async()=>{
             let videos = document.querySelectorAll('video');
-            
+            console.log("Before deleting items in peerconnections object length is",Object.keys(peerconnections).length);
+                for(const key in peerconnections){
+                    peerconnections[key].close();
+                    delete peerconnections[key];
+                }
+            console.log("After deleting items in peerconnections object length is",Object.keys(peerconnections).length);
+            const li_list = document.querySelectorAll('li');
+            li_list.forEach((item)=>{
+                lsContainer.removeChild(item);
+            })
             videos.forEach((video)=>{
                 video.srcObject = null;
                 vidContainer.removeChild(video);
             })
-            await socket.emit('hangup');
-            window.location.href='/';
-            
-            // hangup();
+            chatSocket.emit('hang');
+            socket.emit('hangup');
+    
         })
 
 

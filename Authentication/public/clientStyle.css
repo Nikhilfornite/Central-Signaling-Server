@@ -253,6 +253,10 @@ video {
     right: 0%;
 }
 
+#btnanch{
+    text-decoration: none;
+}
+
 .chatvid-on{
     width: 78%;
 }

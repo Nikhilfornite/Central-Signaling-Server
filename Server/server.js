@@ -22,60 +22,70 @@ const chat = io.of('/chat');
 
 chat.on('connection',(chatSocket)=>{
     console.log(chatSocket.id+" chatsocket connected to the server");
-    chatSocket.on('join-room',(roomID)=>{
-        chatSocket.join(roomID);
-        console.log(`${chatSocket.id} chatsocket joined the ${roomID}`);
+    chatSocket.on('join-room',(room)=>{
+        chatSocket.roomID = room;
+        chatSocket.join(room);
+        console.log(`${chatSocket.id} chatsocket joined the ${room}`);
     })
 
     chatSocket.on('message',(txtMsg,userName)=>{
         console.log(`${chatSocket.id} sent a message ${txtMsg}`);
         chatSocket.to(Array.from(chatSocket.rooms)[1]).emit('message',txtMsg,userName);
+    });
+
+    chatSocket.on('hang',()=>{
+        console.log("A chating client is leaving room",chatSocket.roomID);
+        chatSocket.leave(chatSocket.roomID);
     })
+    
     chatSocket.on('disconnect',()=>{
         console.log(`${chatSocket.id} disconnected`);
-        chatSocket.disconnect();
+        chatSocket.leave(chatSocket.roomID);
     })
-    // chatSocket.on('chatHang',()=>{
-    //     // socket.disconnect();
-    //     socket.to(Array.from(socket.rooms)[1]).emit('disconnect',socket.id);
-    //     socket.leave(Array.from(socket.rooms)[1]);
-    // })
-    
+
 })
 
 io.on('connection',(socket)=>{
     console.log(socket.id+" connected to the server");
-    socket.on('join-room',(roomID)=>{
-        socket.join(roomID);
-        console.log(`${socket.id} joined the room ${roomID}`);
+    socket.on('join-room',(room)=>{
+        socket.roomID = room;
+        socket.join(room);
+        console.log(`${socket.id} joined the room ${room}`);
 
-        socket.to(roomID).emit('user-connected',socket.id);
-
-        socket.on('offer',(offer,newuserID)=>{
-            console.log(`offer sent from ${socket.id} to ${newuserID}`);
-            socket.to(newuserID).emit('offer',offer,socket.id)
-        });
-
-        socket.on('answer',(answer,peerID)=>{
-            console.log(`answer sent from ${socket.id} to ${peerID}`);
-            socket.to(peerID).emit('answer',answer,socket.id);
-        });
-
-        socket.on('icecandidate',(candidate,newuserID)=>{
-            console.log(`icecandidate sent from ${socket.id} to ${newuserID}`);
-            socket.to(newuserID).emit('icecandidate',candidate,socket.id);
-        })
+        socket.to(room).emit('user-connected',socket.id);
     });
 
-    socket.on('disconnect',()=>{
-        console.log(socket.id+" disconnected");
+    socket.on('offer',(offer,newuserID)=>{
+        console.log(`offer sent from ${socket.id} to ${newuserID}`);
+        socket.to(newuserID).emit('offer',offer,socket.id)
+    });
+
+    socket.on('answer',(answer,peerID)=>{
+        console.log(`answer sent from ${socket.id} to ${peerID}`);
+        socket.to(peerID).emit('answer',answer,socket.id);
+    });
+
+    socket.on('icecandidate',(candidate,newuserID)=>{
+        console.log(`icecandidate sent from ${socket.id} to ${newuserID}`);
+        socket.to(newuserID).emit('icecandidate',candidate,socket.id);
     })
+    
 
     socket.on('hangup',()=>{
-        socket.to(Array.from(socket.rooms)[1]).emit('dscnt',socket.id);
-        socket.leave(Array.from(socket.rooms)[1]);
-    })
-});
+        socket.to(socket.roomID).emit('dscnt',socket.id);
+        socket.leave(socket.roomID);
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`${socket.id}'s is ${socket.roomID}`);
+        console.log(`user ${socket.id} disconnected`);
+        
+        if (socket.roomID) {
+          socket.to(socket.roomID).emit('dscnt', socket.id);
+        }
+      });
+      
+    });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
