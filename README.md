@@ -30,7 +30,7 @@ This project is a full-stack application that integrates a **signaling server** 
 ### How to Run
    Since I hosted it in cloud, few configuration needs to be changed in order to run it in local and also database must be configured inside installed pgAdmin. Follow up the video below.
     
-   [![Watch the demo video](https://img.youtube.com/vi/MlBhJLB_RHw/0.jpg)](https://www.youtube.com/watch?v=MlBhJLB_RHw)
+   [![Watch the demo video](https://img.youtube.com/vi/E__PeHajyhA/0.jpg)](https://www.youtube.com/watch?v=E__PeHajyhA)
     
    ### I have built two applications in the same project folder. So, open two separate terminals in VsCode by clicking Terminal at the top and choose New Terminal.
      Step 1. Inside the first terminal run the below commands
