@@ -36,9 +36,9 @@ This project is a full-stack application that integrates a **signaling server** 
      Step 1. Inside the first terminal run the below commands
        cd Server      -> to navigate to Server folder.
        npm install    -> to download all dependencies.
-       npm server.js  -> to start the server. 
+       node server.js  -> to start the server. 
      Step 2. Inside the second terminal run the below commands
        cd Authentication      -> to navigate to Authentication folder.
        npm install    -> to download all dependencies.
-       npm app.js  -> to start the backend application. 
+       node app.js  -> to start the backend application. 
      Step 3. open the browser and type the localhost with the port number the second terminal gives.
